@@ -1,6 +1,6 @@
 {
   "name": "Guitare - Lecture de notes",
-  "short_name": "GuitareNotes",
+  "short_name": "g_notes",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",

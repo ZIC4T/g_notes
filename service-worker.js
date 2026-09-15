@@ -1,4 +1,4 @@
-const CACHE_NAME = "guitare-notes-v1";
+const CACHE_NAME = "g_notes-v1";
 const FICHIERS_A_METTRE_EN_CACHE = [
   "./",
   "./index.html",
