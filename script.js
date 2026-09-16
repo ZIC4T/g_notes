@@ -133,6 +133,16 @@ function noteSuivante() {
   afficherPortee(maSequence, indexCourant);
 }
 
+function notePrecedente() {
+  if (indexCourant > 0) {
+    indexCourant--;
+    afficherEtatCourant();
+    afficherPortee(maSequence, indexCourant);
+  }
+  // si on est déjà sur la première note (index 0), on ne fait rien :
+  // pas de séquence précédente à aller chercher
+}
+
 function revelerReponse() {
   const note = maSequence[indexCourant];
   document.getElementById("reponse").textContent =
@@ -141,6 +151,7 @@ function revelerReponse() {
 
 document.getElementById("btn-suivant").addEventListener("click", noteSuivante);
 document.getElementById("btn-reveler").addEventListener("click", revelerReponse);
+document.getElementById("btn-precedent").addEventListener("click", notePrecedente);
 
 // Affichage initial
 afficherEtatCourant();
