@@ -61,13 +61,13 @@ function afficherPortee(sequence, indexActif) {
   div.innerHTML = "";
 
   const renderer = new Renderer(div, Renderer.Backends.SVG);
-  renderer.resize(500, 150);
+  renderer.resize(500, 220);
   const context = renderer.getContext();
 
-  const stave = new Stave(10, 40, 480);
+  const stave = new Stave(10, 20, 480);
   stave.addClef("treble").setContext(context).draw();
 
-  /*const notesVex = sequence.map((note, i) => {
+  const notesVex = sequence.map((note, i) => {
     const staveNote = new StaveNote({
       keys: [note.cle],
       duration: "q"
@@ -76,6 +76,8 @@ function afficherPortee(sequence, indexActif) {
     if (note.accidental) {
       staveNote.addModifier(new Accidental(note.accidental));
     }
+
+
 	const notesVex = sequence.map((note, i) => {
   const staveNote = new StaveNote({
     keys: [note.cle],
@@ -93,7 +95,7 @@ function afficherPortee(sequence, indexActif) {
   }
 
   return staveNote;
-	});*/
+	});
 
     if (i === indexActif) {
       staveNote.setStyle({ fillStyle: "#e67e22", strokeStyle: "#e67e22" });
@@ -101,6 +103,7 @@ function afficherPortee(sequence, indexActif) {
 
     return staveNote;
   });
+
 
   const voice = new Voice({ num_beats: notesVex.length, beat_value: 4 });
   voice.addTickables(notesVex);

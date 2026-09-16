@@ -8,6 +8,12 @@ body {
   margin: 30px auto;
   width: 100%;
   max-width: 500px;
+  overflow: visible;
+}
+
+#portee svg {
+  max-width: 100%;
+  height: auto;
 }
 
 button {
