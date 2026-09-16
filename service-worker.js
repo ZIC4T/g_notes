@@ -1,4 +1,4 @@
-const CACHE_NAME = "g_notes-v4"; // ← incrémente ce numéro à chaque déploiement important
+const CACHE_NAME = "g_notes-v5"; // ← incrémente ce numéro à chaque déploiement important
 const FICHIERS_A_METTRE_EN_CACHE = [
   "./",
   "./index.html",

@@ -1,34 +1,42 @@
 // Position ouverte : cordes à vide + 3 premières cases
-const notesGuitare = [
-  { nom: "E",  corde: 6, case: 0, cle: "e/3",  accidental: null },
-  { nom: "F",  corde: 6, case: 1, cle: "f/3",  accidental: null },
-  { nom: "F#", corde: 6, case: 2, cle: "f#/3", accidental: "#" },
-  { nom: "G",  corde: 6, case: 3, cle: "g/3",  accidental: null },
+const NOTES_CHROMATIQUES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
-  { nom: "A",  corde: 5, case: 0, cle: "a/3",  accidental: null },
-  { nom: "Bb", corde: 5, case: 1, cle: "bb/3", accidental: "b" },
-  { nom: "B",  corde: 5, case: 2, cle: "b/3",  accidental: null },
-  { nom: "C",  corde: 5, case: 3, cle: "c/4",  accidental: null },
-
-  { nom: "D",  corde: 4, case: 0, cle: "d/4",  accidental: null },
-  { nom: "D#", corde: 4, case: 1, cle: "d#/4", accidental: "#" },
-  { nom: "E",  corde: 4, case: 2, cle: "e/4",  accidental: null },
-  { nom: "F",  corde: 4, case: 3, cle: "f/4",  accidental: null },
-
-  { nom: "G",  corde: 3, case: 0, cle: "g/4",  accidental: null },
-  { nom: "G#", corde: 3, case: 1, cle: "g#/4", accidental: "#" },
-  { nom: "A",  corde: 3, case: 2, cle: "a/4",  accidental: null },
-
-  { nom: "B",  corde: 2, case: 0, cle: "b/4",  accidental: null },
-  { nom: "C",  corde: 2, case: 1, cle: "c/5",  accidental: null },
-  { nom: "C#", corde: 2, case: 2, cle: "c#/5", accidental: "#" },
-  { nom: "D",  corde: 2, case: 3, cle: "d/5",  accidental: null },
-
-  { nom: "E",  corde: 1, case: 0, cle: "e/5",  accidental: null },
-  { nom: "F",  corde: 1, case: 1, cle: "f/5",  accidental: null },
-  { nom: "F#", corde: 1, case: 2, cle: "f#/5", accidental: "#" },
-  { nom: "G",  corde: 1, case: 3, cle: "g/5",  accidental: null },
+// Notes à vide de chaque corde, avec leur octave (en notation guitare : E3 = Mi grave)
+const cordesOuvertes = [
+  { corde: 6, note: "E", octave: 3 },
+  { corde: 5, note: "A", octave: 3 },
+  { corde: 4, note: "D", octave: 4 },
+  { corde: 3, note: "G", octave: 4 },
+  { corde: 2, note: "B", octave: 4 },
+  { corde: 1, note: "E", octave: 5 },
 ];
+
+const NOMBRE_DE_CASES = 7; // ← change à 5 si tu préfères commencer moins loin
+
+// Calcule le nom et l'octave d'une note à partir de la corde à vide + un nombre de cases
+function genererNotesGuitare(nombreDeCases) {
+  const notes = [];
+
+  cordesOuvertes.forEach(({ corde, note, octave }) => {
+    const indexOuvert = NOTES_CHROMATIQUES.indexOf(note);
+
+    for (let fret = 0; fret <= nombreDeCases; fret++) {
+      const indexTotal = indexOuvert + fret;
+      const indexNote = indexTotal % 12;
+      const octaveFinal = octave + Math.floor(indexTotal / 12);
+
+      const nom = NOTES_CHROMATIQUES[indexNote];
+      const accidental = nom.includes("#") ? "#" : null;
+      const cle = `${nom.toLowerCase()}/${octaveFinal}`;
+
+      notes.push({ nom, corde, case: fret, cle, accidental });
+    }
+  });
+
+  return notes;
+}
+
+const notesGuitare = genererNotesGuitare(NOMBRE_DE_CASES);
 
 function noteAleatoire() {
   const index = Math.floor(Math.random() * notesGuitare.length);
@@ -173,18 +181,18 @@ if ("serviceWorker" in navigator) {
 function dessinerManche(note) {
   const div = document.getElementById("manche");
 
-  const largeurTotale = 360;
+  const xOuvert = 25;
+  const xSillet = 55;
+  const largeurCase = 42;
+  const largeurTotale = xSillet + NOMBRE_DE_CASES * largeurCase + 15;
   const hauteurTotale = 180;
   const yHaut = 20;
   const yBas = 160;
-  const xOuvert = 25;      // position des cordes à vide, avant le sillet
-  const xSillet = 55;      // position du sillet (début du manche)
-  const largeurCase = 95;  // largeur de chaque case après le sillet
 
-  const espaceCorde = (yBas - yHaut) / 5; // 5 intervalles pour 6 cordes
+  const espaceCorde = (yBas - yHaut) / 5;
 
   function yPourCorde(corde) {
-    const indexDepuisHaut = 6 - corde; // corde 6 (grave) en haut, corde 1 (aigu) en bas
+    const indexDepuisHaut = 6 - corde;
     return yHaut + indexDepuisHaut * espaceCorde;
   }
 
@@ -195,25 +203,21 @@ function dessinerManche(note) {
 
   let svg = `<svg viewBox="0 0 ${largeurTotale} ${hauteurTotale}" xmlns="http://www.w3.org/2000/svg">`;
 
-  // Lignes des cordes
   for (let corde = 1; corde <= 6; corde++) {
     const y = yPourCorde(corde);
-    const epaisseur = corde >= 5 ? 2.5 : 1.5; // cordes graves dessinées plus épaisses
-    svg += `<line x1="${xOuvert}" y1="${y}" x2="${xSillet + 3 * largeurCase}" y2="${y}" stroke="#333" stroke-width="${epaisseur}" />`;
+    const epaisseur = corde >= 5 ? 2.5 : 1.5;
+    svg += `<line x1="${xOuvert}" y1="${y}" x2="${xSillet + NOMBRE_DE_CASES * largeurCase}" y2="${y}" stroke="#333" stroke-width="${epaisseur}" />`;
   }
 
-  // Sillet (trait épais séparant "à vide" du manche)
   svg += `<line x1="${xSillet}" y1="${yHaut}" x2="${xSillet}" y2="${yBas}" stroke="#000" stroke-width="6" />`;
 
-  // Frettes 1, 2, 3
-  for (let f = 1; f <= 3; f++) {
+  for (let f = 1; f <= NOMBRE_DE_CASES; f++) {
     const x = xSillet + f * largeurCase;
     svg += `<line x1="${x}" y1="${yHaut}" x2="${x}" y2="${yBas}" stroke="#888" stroke-width="2" />`;
     svg += `<text x="${x - largeurCase / 2}" y="${hauteurTotale - 2}" font-size="10" text-anchor="middle" fill="#666">${f}</text>`;
   }
-  svg += `<text x="${xOuvert}" y="${hauteurTotale - 2}" font-size="10" text-anchor="middle" fill="#666">à vide</text>`;
+  svg += `<text x="${xOuvert}" y="${hauteurTotale - 2}" font-size="10" text-anchor="middle" fill="#666">0</text>`;
 
-  // Point indiquant la position de la note à jouer
   const x = xPourCase(note.case);
   const y = yPourCorde(note.corde);
   svg += `<circle cx="${x}" cy="${y}" r="11" fill="#e67e22" stroke="#000" stroke-width="1" />`;
