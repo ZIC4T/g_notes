@@ -67,7 +67,7 @@ function afficherPortee(sequence, indexActif) {
   const stave = new Stave(10, 40, 480);
   stave.addClef("treble").setContext(context).draw();
 
-  const notesVex = sequence.map((note, i) => {
+  /*const notesVex = sequence.map((note, i) => {
     const staveNote = new StaveNote({
       keys: [note.cle],
       duration: "q"
@@ -93,7 +93,8 @@ function afficherPortee(sequence, indexActif) {
   }
 
   return staveNote;
-});
+	});*/
+
     if (i === indexActif) {
       staveNote.setStyle({ fillStyle: "#e67e22", strokeStyle: "#e67e22" });
     }
