@@ -43,3 +43,13 @@ button:hover {
 button:active {
   transform: scale(0.95);
 }
+
+#manche {
+  margin: 20px auto;
+  max-width: 360px;
+}
+
+#manche svg {
+  width: 100%;
+  height: auto;
+}

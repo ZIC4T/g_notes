@@ -145,8 +145,8 @@ function notePrecedente() {
 
 function revelerReponse() {
   const note = maSequence[indexCourant];
-  document.getElementById("reponse").textContent =
-    `Note : ${note.nom} — Corde ${note.corde}, Case ${note.case}`;
+  document.getElementById("reponse").textContent = `Note : ${note.nom}`;
+  dessinerManche(note);
 }
 
 document.getElementById("btn-suivant").addEventListener("click", noteSuivante);
@@ -154,7 +154,12 @@ document.getElementById("btn-reveler").addEventListener("click", revelerReponse)
 document.getElementById("btn-precedent").addEventListener("click", notePrecedente);
 
 // Affichage initial
-afficherEtatCourant();
+function afficherEtatCourant() {
+  document.getElementById("reponse").textContent = "";
+  document.getElementById("manche").innerHTML = "";
+  const numero = indexCourant + 1;
+  console.log(`Note ${numero} sur ${maSequence.length}`);
+}
 afficherPortee(maSequence, indexCourant);
 
 if ("serviceWorker" in navigator) {
@@ -163,4 +168,58 @@ if ("serviceWorker" in navigator) {
       .then(() => console.log("Service worker enregistré"))
       .catch((err) => console.error("Échec de l'enregistrement :", err));
   });
+}
+
+function dessinerManche(note) {
+  const div = document.getElementById("manche");
+
+  const largeurTotale = 360;
+  const hauteurTotale = 180;
+  const yHaut = 20;
+  const yBas = 160;
+  const xOuvert = 25;      // position des cordes à vide, avant le sillet
+  const xSillet = 55;      // position du sillet (début du manche)
+  const largeurCase = 95;  // largeur de chaque case après le sillet
+
+  const espaceCorde = (yBas - yHaut) / 5; // 5 intervalles pour 6 cordes
+
+  function yPourCorde(corde) {
+    const indexDepuisHaut = 6 - corde; // corde 6 (grave) en haut, corde 1 (aigu) en bas
+    return yHaut + indexDepuisHaut * espaceCorde;
+  }
+
+  function xPourCase(numeroCase) {
+    if (numeroCase === 0) return xOuvert;
+    return xSillet + (numeroCase - 0.5) * largeurCase;
+  }
+
+  let svg = `<svg viewBox="0 0 ${largeurTotale} ${hauteurTotale}" xmlns="http://www.w3.org/2000/svg">`;
+
+  // Lignes des cordes
+  for (let corde = 1; corde <= 6; corde++) {
+    const y = yPourCorde(corde);
+    const epaisseur = corde >= 5 ? 2.5 : 1.5; // cordes graves dessinées plus épaisses
+    svg += `<line x1="${xOuvert}" y1="${y}" x2="${xSillet + 3 * largeurCase}" y2="${y}" stroke="#333" stroke-width="${epaisseur}" />`;
+  }
+
+  // Sillet (trait épais séparant "à vide" du manche)
+  svg += `<line x1="${xSillet}" y1="${yHaut}" x2="${xSillet}" y2="${yBas}" stroke="#000" stroke-width="6" />`;
+
+  // Frettes 1, 2, 3
+  for (let f = 1; f <= 3; f++) {
+    const x = xSillet + f * largeurCase;
+    svg += `<line x1="${x}" y1="${yHaut}" x2="${x}" y2="${yBas}" stroke="#888" stroke-width="2" />`;
+    svg += `<text x="${x - largeurCase / 2}" y="${hauteurTotale - 2}" font-size="10" text-anchor="middle" fill="#666">${f}</text>`;
+  }
+  svg += `<text x="${xOuvert}" y="${hauteurTotale - 2}" font-size="10" text-anchor="middle" fill="#666">à vide</text>`;
+
+  // Point indiquant la position de la note à jouer
+  const x = xPourCase(note.case);
+  const y = yPourCorde(note.corde);
+  svg += `<circle cx="${x}" cy="${y}" r="11" fill="#e67e22" stroke="#000" stroke-width="1" />`;
+  svg += `<text x="${x}" y="${y + 4}" font-size="11" text-anchor="middle" fill="white" font-family="sans-serif">${note.nom}</text>`;
+
+  svg += `</svg>`;
+
+  div.innerHTML = svg;
 }
